@@ -14,6 +14,20 @@ const APP_VERSION = '1.0';
 // ─────────────────────────────────────────────
 const CATEGORIES = [
   {
+    key: 'street', label: 'Frequently used', color: '#4b5563', rgb: [75,86,99],
+    features: [
+      { type: 'sign',          label: 'Sign',          icon: '🪧' },
+      { type: 'traffic-light', label: 'Traffic light', icon: '🚦' },
+      { type: 'crosswalk',     label: 'Crosswalk',     icon: '🚸' },
+      { type: 'bike-rack',     label: 'Bicycle rack',  icon: '🚲' },
+      { type: 'storm-drain',   label: 'Storm drain',   icon: '🕳️' },
+      { type: 'street-light',  label: 'Street light',  icon: '💡' },
+      { type: 'bench',         label: 'Bench',         icon: '🪑' },
+      { type: 'trash-can',     label: 'Trash can',     icon: '🗑️' },
+      { type: 'tree',          label: 'Tree',          icon: '🌳' }
+    ]
+  },
+  {
     key: 'residential', label: 'Housing', color: '#f2c14e', rgb: [242,193,78],
     features: [
       { type: 'single-family',   label: 'Single-family homes', icon: '🏠' },
@@ -77,9 +91,8 @@ const CATEGORIES = [
     features: [
       { type: 'bus-stop',       label: 'Bus stop',           icon: '🚏' },
       { type: 'transit-station',label: 'Rail / transit station', icon: '🚉' },
-      { type: 'bike',           label: 'Bike lane / bike share', icon: '🚲' },
+      { type: 'bike',           label: 'Bike lane / bike share', icon: '🚴' },
       { type: 'parking',        label: 'Parking',            icon: '🅿️' },
-      { type: 'crosswalk',      label: 'Pedestrian crossing', icon: '🚶' },
       { type: 'highway',        label: 'Highway interchange', icon: '🛣️' },
       { type: 'ev-charging',    label: 'EV charging',        icon: '🔌' },
       { type: 'airport',        label: 'Airport',            icon: '✈️' },
@@ -89,7 +102,7 @@ const CATEGORIES = [
   {
     key: 'openspace', label: 'Open space & recreation', color: '#5aa469', rgb: [90,164,105],
     features: [
-      { type: 'park',            label: 'Park',               icon: '🌳' },
+      { type: 'park',            label: 'Park',               icon: '🌲' },
       { type: 'playground',      label: 'Playground',         icon: '🛝' },
       { type: 'community-garden',label: 'Community garden',   icon: '🌱' },
       { type: 'sports-fields',   label: 'Sports fields',      icon: '⚽' },
@@ -110,7 +123,7 @@ const CATEGORIES = [
       { type: 'water-treatment', label: 'Water treatment',     icon: '🚰' },
       { type: 'wastewater',      label: 'Wastewater plant',    icon: '🧪' },
       { type: 'recycling',       label: 'Recycling center',    icon: '♻️' },
-      { type: 'landfill',        label: 'Landfill',            icon: '🗑️' },
+      { type: 'landfill',        label: 'Landfill',            icon: '🚮' },
       { type: 'cell-tower',      label: 'Cell tower / broadband', icon: '📡' },
       { type: 'stormwater',      label: 'Stormwater / detention', icon: '💧' }
     ]
