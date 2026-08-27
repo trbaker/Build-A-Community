@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build a Community v1.0</title>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<!-- html2canvas for screenshots -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-mark" aria-hidden="true">
+    <span style="background:var(--residential)"></span>
+    <span style="background:var(--civic)"></span>
+    <span style="background:var(--openspace)"></span>
+    <span style="background:var(--commercial)"></span>
+  </div>
+  <h1>Build a Community
+    <span class="version">v1.0</span>
+    <span class="tagline">Plan land use, services, and infrastructure on a real map</span>
+  </h1>
+  <div class="header-actions">
+    <button class="btn btn-screenshot" onclick="takeScreenshot()">Export image</button>
+    <button class="btn btn-save" onclick="saveToArcGIS()">Save to ArcGIS Online</button>
+    <button class="btn btn-clear" onclick="clearAll()">Clear map</button>
+    <div style="position:relative;display:flex;align-items:flex-start;">
+      <button class="btn btn-log" onclick="toggleLog()">About</button>
+      <span class="log-count" id="logCount">0</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+  <!-- SIDEBAR: built from the CATEGORIES array in the script below -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <h2>Community features</h2>
+      <p>Drag a feature onto the map. Click a placed feature to rename or remove it.</p>
+    </div>
+    <div id="categoryList"></div>
+
+    <div class="summary" id="summary">
+      <h3>Land-use mix <span class="total" id="summaryTotal">0 features</span></h3>
+      <div class="mix-bar" id="mixBar"></div>
+      <div class="mix-list" id="mixList"></div>
+      <div class="summary-empty" id="summaryEmpty">Nothing placed yet. The mix updates as you build.</div>
+    </div>
+  </div>
+
+  <!-- MAP AREA -->
+  <div class="map-container" id="mapContainer">
+    <div id="map-loading">
+      <div class="spinner"></div>
+      Loading map…
+    </div>
+    <div id="viewDiv"></div>
+
+    <!-- LOCATION SEARCH -->
+    <div class="search-wrap hide-on-screenshot" id="searchWrap">
+      <input class="search-input" id="searchInput" type="text"
+             placeholder="Search a city, neighborhood, campus, or address"
+             autocomplete="off"
+             onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="search-btn" onclick="doSearch()">Go</button>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCGIS INFO MODAL -->
+<div class="modal-overlay" id="arcgisInfoModal">
+  <div class="info-modal">
+    <span class="info-modal-icon">🗺️</span>
+    <h2>Save to ArcGIS Online</h2>
+    <p>
+      Saving requires an ArcGIS Online account with <strong>Publisher</strong> privileges
+      (for example, a student or instructor account in a university or ArcGIS for Schools organization).
+      <br><br>
+      Your design is published as a hosted feature layer and a web map, both shared with your organization.
+      The web map opens in <strong>Map Viewer</strong> and is also available in
+      <strong>National Geographic MapMaker</strong>.
+    </p>
+    <div class="info-modal-actions">
+      <button class="btn btn-cancel" onclick="closeArcGISInfo()">Cancel</button>
+      <button class="btn btn-save" onclick="proceedToSignIn()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE MODAL -->
+<div class="modal-overlay" id="signinModal">
+  <div class="modal">
+    <h2>Save to ArcGIS Online</h2>
+    <p>Sign in and name your community map.</p>
+    <input type="text" id="arcgisUser" placeholder="ArcGIS username" autocomplete="username">
+    <input type="password" id="arcgisPass" placeholder="Password" autocomplete="current-password">
+    <div style="display:flex;align-items:center;gap:8px;margin:2px 0 12px;">
+      <input type="checkbox" id="rememberMe" style="width:15px;height:15px;cursor:pointer;accent-color:#3d7cc9;">
+      <label for="rememberMe" style="font-size:0.8rem;color:var(--ink-soft);cursor:pointer;">
+        Remember my credentials for 1 hour
+      </label>
+    </div>
+    <div class="field-label">Map name</div>
+    <input type="text" id="mapTitle" placeholder="Name your map" autocomplete="off">
+    <div id="signinError" style="color:#c0392b;font-size:0.84rem;font-weight:500;min-height:20px;margin-bottom:6px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeSignIn()">Cancel</button>
+      <button class="btn btn-primary" onclick="doSignIn()">Save map</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT / SYSTEM LOG -->
+<div class="log-overlay" id="logOverlay">
+  <div class="log-window">
+    <div class="log-header">
+      <h3>About Build a Community</h3>
+      <div class="log-header-actions">
+        <button class="log-btn log-btn-copy" onclick="copyLog()">Copy log</button>
+        <button class="log-btn log-btn-clear" onclick="clearLog()">Clear log</button>
+        <button class="log-btn log-btn-close" onclick="toggleLog()">Close</button>
+      </div>
+    </div>
+    <div class="about-text">
+      <p>
+        Build a Community is a planning sandbox. Drag housing, services, businesses, transportation,
+        open space, and infrastructure onto a real basemap to design a neighborhood, town, or campus district.
+        Feature categories follow conventional land-use color coding, and the land-use mix panel tracks
+        what you've placed.
+      </p>
+      <p>
+        Export your design as a PNG image, or save it to ArcGIS Online as a hosted feature layer and web map
+        for further analysis in Map Viewer or National Geographic MapMaker.
+      </p>
+      <p>
+        Created by Tom Baker, Esri Education Team &nbsp;|&nbsp;
+        <a href="https://trbaker.github.io/buildACommunity" target="_blank">trbaker.github.io/buildACommunity</a>
+      </p>
+    </div>
+    <div class="log-section-label">System log</div>
+    <div class="log-body" id="logBody">
+      <div class="log-empty" id="logEmpty">No log entries yet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREENSHOT TITLE MODAL -->
+<div class="ss-modal-overlay" id="ssTitleOverlay">
+  <div class="ss-modal">
+    <h3>Export image</h3>
+    <p>Optional: add a title to print at the top of the image.</p>
+    <input class="ss-title-input" id="ssTitleInput" type="text"
+           placeholder="e.g. Westside Transit-Oriented District"
+           maxlength="60"
+           onkeydown="if(event.key==='Enter') doScreenshot()">
+    <div class="ss-modal-actions">
+      <button class="btn btn-cancel" onclick="doScreenshot()">Skip title</button>
+      <button class="btn btn-screenshot" onclick="doScreenshot()">Export PNG</button>
+    </div>
+  </div>
+</div>
+
+<div class="flash" id="flash"></div>
+<div class="save-status" id="saveStatus">Saved</div>
+
+<script src="catalog.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
