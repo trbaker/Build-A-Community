@@ -263,6 +263,20 @@ header h1 .tagline {
   margin-top: 6px;
   line-height: 1.4;
 }
+.sidebar-credit {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.sidebar-credit a {
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sidebar-credit a:hover { color: var(--civic); text-decoration: underline; }
 
 /* ── MAP AREA ── */
 .map-container { flex: 1; position: relative; overflow: hidden; }
